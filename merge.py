@@ -1,13 +1,15 @@
 def createdict(lines, dic, idx1, idx2):
-    for l in lines:
-        llist = l.strip().split('\t')
+    for i in range(1, len(lines)):
+        l = lines[i]
+        llist = l.strip('\n').split('\t')
         keypair = (llist[idx1].strip('"'), llist[idx2].strip('"'))
+#        print(str(keypair))
         dic[keypair] = l
 
 def mergedict(emr, d1, d2, d3, d4, d):
     for key in list(d.keys()):
         if key in d1 and key in d2 and key in d3 and key in d4:
-            mergedline = d1[key].strip() + '\t' + d2[key].strip() + '\t' + d3[key].strip() + '\t' + d4[key]
+            mergedline = d1[key].strip('\n') + '\t' + d2[key].strip('\n') + '\t' + d3[key].strip('\n') + '\t' + d4[key]
             emr.append(mergedline)
             del d1[key]
             del d2[key]
@@ -15,19 +17,19 @@ def mergedict(emr, d1, d2, d3, d4, d):
             del d4[key]
 
 
-f = open('./EMR1_p2.txt', 'r')
+f = open('../txt/EMR1_p2.txt', 'r')
 lines1 = f.readlines()
 f.close()
 
-f = open('./EMR2_p2.txt', 'r')
+f = open('../txt/EMR2_p2.txt', 'r')
 lines2 = f.readlines()
 f.close()
 
-f = open('./EMR3_p2.txt', 'r')
+f = open('../txt/EMR3_p2.txt', 'r')
 lines3 = f.readlines()
 f.close()
 
-f = open('./EMR4_p2.txt', 'r')
+f = open('../txt/EMR4_p2.txt', 'r')
 lines4 = f.readlines()
 f.close()
 
@@ -78,7 +80,7 @@ mergedict(emr, dic1, dic2, dic3, dic4, dic4)
 #print("dic2:", len(dic2))
 #print("dic3:", len(dic3))
 #print("dic4:", len(dic4))
-with open('mergedEMR.txt', 'w') as f:
+with open('../data/mergedEMR.txt', 'w') as f:
     f.write(firstline)
     for l in emr:
         f.write(l)
