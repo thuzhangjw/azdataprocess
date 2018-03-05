@@ -3,12 +3,14 @@ import numpy as np
 import pandas as pd
 import time
 
+
 def is_number(x):
     try:
         float(x)
         return True
     except:
         return False
+
 
 t0 = time.clock()
 
