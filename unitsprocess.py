@@ -12,7 +12,7 @@ def is_number(x):
 
 t0 = time.clock()
 
-df = pd.read_excel('../data/pickedrows.xlsx', dtype=object)
+df = pd.read_csv('../data/pickedrows.txt', sep='\t', dtype=object)
 criterion = pd.Series([True] * len(df))
 resdf = None
 

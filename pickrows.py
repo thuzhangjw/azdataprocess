@@ -27,9 +27,10 @@ def get_criterion(x):
     criterion &= number_filter_try(df[x])
     #print(criterion.value_counts())
 
-df = pd.read_table('./pickedEMR.txt', dtype=str)
+df = pd.read_excel('../data/mergedEMR.xlsx', dtype=object)
 cols = df.columns.map(lambda x: x if '单位' in x else np.nan).dropna()
 
+print(len(df))
 criterion = pd.Series([True] * len(df))
 
 t0 = time.clock()
@@ -37,15 +38,15 @@ cols.map(get_criterion)
 print(time.clock() - t0)
 print(criterion.value_counts())
 
-print('内存使用:', psutil.Process(os.getpid()).memory_info().rss)
+#print('内存使用:', psutil.Process(os.getpid()).memory_info().rss)
 
-s = df['检验_(URBC)尿红细胞_化验结果_全部']
-criterion2 = s.map(lambda x: not '月' in str(x) or False)
-print(criterion2.value_counts())
+#s = df['检验_(URBC)尿红细胞_化验结果_全部']
+#criterion2 = s.map(lambda x: not '月' in str(x) or False)
+#print(criterion2.value_counts())
+#
+#criterion &= criterion2
+#print(criterion.value_counts())
 
-criterion &= criterion2
-print(criterion.value_counts())
-
-df[criterion].to_csv('pickedrows.txt', sep='\t', index=False)
+df[criterion].to_csv('../data/pickedrows.txt', sep='\t', index=False)
 print('内存使用:', psutil.Process(os.getpid()).memory_info().rss)
 
