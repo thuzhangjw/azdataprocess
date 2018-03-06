@@ -74,7 +74,8 @@ def add2map(sl, i):
 
 idx = 0
 for i in range(processnum):
-    for sl in pl[i]:
+    for s in pl[i]:
+        sl = s.split('^')
         if float(sl[2]) > 0.75 and negtivewordscheck(sl[1], sl[0]):
             add2map(sl, idx)
         idx += 1
@@ -83,3 +84,4 @@ reslist = sorted(diagmap.items(), key=lambda x: x[1][0][0], reverse=True)
 with open('../data/diags.txt', 'w') as f:
     for i in range(30):
         f.write(reslist[i][0] + '^' + str(reslist[i][1][0][0]) + '^' + str(reslist[i][1][1]) + '\n')
+

@@ -4,7 +4,7 @@ import math
 from multiprocessing import Process, Manager
 
 
-df = pd.read_csv('../data/pickdiagnose.txt', sep='\t', dtype=object)
+df = pd.read_csv('../data/mergedunits.txt', sep='\t', dtype=object)
 diagnoseSeries = df['计算字段_出院诊断(所有)_结果_默认值']
 #icd10df = pd.read_excel('../data/ICD10.xlsx', dtype=object)
 #icd10diagnose = icd10df['名称']
@@ -23,14 +23,23 @@ icd10diagnose = [
     '二尖瓣关闭不全',
     '病态窦房结综合征',
     '稳定型心绞痛',
-    '风湿性二尖瓣狭窄伴关闭不全'
+    '风湿性二尖瓣狭窄伴关闭不全',
+    '三尖瓣关闭不全',
+    '急性广泛前壁心肌梗死',
+    '心律失常',
+    '陈旧性前壁心肌梗死',
+    '劳力型心绞痛',
+    '主动脉瓣关闭不全',
+    '陈旧性心肌梗死',
+    '陈旧性下壁心肌梗死',
 ]
 
 
 selfdict = {
     '抬高性': '抬高型',
     '心房颤动': '房颤',
-    '稳定性': '稳定型'
+    '稳定性': '稳定型',
+    '心梗': '心肌梗死'
 }
 
 negtivewords = ['非']
@@ -133,7 +142,7 @@ for val in reslist:
         criterion[tp[0]] = True
     f.write(val[0] + '^' + str(val[1][0][0]) + '^' + str(val[1][1]) + '\n')
     num += 1
-    if num >= len(icd10diagnose):
+    if num >= 10:
         break
 
 f.close()
