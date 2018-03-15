@@ -190,12 +190,12 @@ classifier = tf.estimator.DNNClassifier(
     label_vocabulary = labels
 )
 
-classifier.train(input_fn=lambda : train_input_fn(train_x, train_y, len(train_y)), steps=300)  # full batch learning
+classifier.train(input_fn=lambda : train_input_fn(train_x, train_y, len(train_y)), steps=200)  # full batch learning
 
 eval_result = classifier.evaluate(input_fn=lambda : eval_input_fn(test_x, test_y, len(test_y)))
 
 
-print('\nTest set accuracy: {accuracy:0.3f}\n\n'.format(eval_result))
+print('\nTest set accuracy: {accuracy:0.3f}\n\n'.format(**eval_result))
 
 print(eval_result)
 
