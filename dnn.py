@@ -2,19 +2,19 @@ import tensorflow as tf
 import pandas as pd
 import pinyin
 
-CSV_COLUMNS_NAMES = ['性别', '年龄', '血型', '舒张压', '收缩压', '心脏心律', '心音s1', '心音s2', '心音s3', '心音s4', '心音a2',
-                     '心音p2', '心音a2和p2关系', '心率', '(WBC)白细胞_G/L', '(PLT)血小板_G/L', '(RBC)红细胞计数_T/L',
-                     '(MCHC)平均红细胞Hb浓度_g/L', '(HB)血红蛋白_g/dl', '(LYMBFB)淋巴细胞百分比_%', '(MONBFB)单核细胞百分比_%',
-                     '(NE)中性粒细胞数_G/L', '(MON)单核细胞数_G/L', '(HCT)红细胞压积_%', '(MCV)红细胞平均体积_fL',
-                     '(RDWSD)红细胞分布宽度-SD值_fl', '(RDWCV)红细胞分布宽度-CV值_%', '(MPV)平均血小板体积_fL',
-                     '(EOSBFB)嗜酸细胞百分比_%', '(BAS)嗜碱细胞数_G/L', '(PLCR)大血小板比率_%', '(BUN)尿素_mmol/L',
-                     '(CREA)肌酐_mmol/L', '(HDL)高密度脂蛋白_mmol/L', '(LDL)低密度脂蛋白_mmol/L', '(TC)总胆固醇_mmol/L',
-                     '(TG)甘油三酯_mmol/L', '(UA)尿酸_umol/L', '钾(K)_mmol/L', '钠(NA)_mmol/L', '氯(CL)_mmol/L',
-                     '钙(CA)_mmol/L', '镁(MG)_mmol/L', '无机磷测定(P)_mmol/L', '(LDH)乳酸脱氢酶_U/L', '便潜血(BOBB)',
-                     '(AST)谷草转氨酶_U/L', '(ALP)碱性磷酸酶_U/L', '(TBA)血清总胆汁酸_μmol/L', '(TP)总蛋白_g/L',
-                     '(ALB)白蛋白_g/L', '(GA)糖化血清白蛋白_%', '(DDIMER)D-二聚体定量_μg/l', '(GLU)葡萄糖_mmol/L',
-                     '(PCO2)二氧化碳分压_mmHg', '(SO2)氧饱和度_%', '(BASBFB)嗜碱细胞百分比_%', '(FBG)纤维蛋白原定量_g/l',
-                     '(HCY)同型半胱氨酸_umol/l', '(NEBFB)中性粒细胞百分比_%', 'GB/T-codename']
+#CSV_COLUMNS_NAMES = ['性别', '年龄', '血型', '舒张压', '收缩压', '心脏心律', '心音s1', '心音s2', '心音s3', '心音s4', '心音a2',
+#                     '心音p2', '心音a2和p2关系', '心率', '(WBC)白细胞_G/L', '(PLT)血小板_G/L', '(RBC)红细胞计数_T/L',
+#                     '(MCHC)平均红细胞Hb浓度_g/L', '(HB)血红蛋白_g/dl', '(LYMBFB)淋巴细胞百分比_%', '(MONBFB)单核细胞百分比_%',
+#                     '(NE)中性粒细胞数_G/L', '(MON)单核细胞数_G/L', '(HCT)红细胞压积_%', '(MCV)红细胞平均体积_fL',
+#                     '(RDWSD)红细胞分布宽度-SD值_fl', '(RDWCV)红细胞分布宽度-CV值_%', '(MPV)平均血小板体积_fL',
+#                     '(EOSBFB)嗜酸细胞百分比_%', '(BAS)嗜碱细胞数_G/L', '(PLCR)大血小板比率_%', '(BUN)尿素_mmol/L',
+#                     '(CREA)肌酐_mmol/L', '(HDL)高密度脂蛋白_mmol/L', '(LDL)低密度脂蛋白_mmol/L', '(TC)总胆固醇_mmol/L',
+#                     '(TG)甘油三酯_mmol/L', '(UA)尿酸_umol/L', '钾(K)_mmol/L', '钠(NA)_mmol/L', '氯(CL)_mmol/L',
+#                     '钙(CA)_mmol/L', '镁(MG)_mmol/L', '无机磷测定(P)_mmol/L', '(LDH)乳酸脱氢酶_U/L', '便潜血(BOBB)',
+#                     '(AST)谷草转氨酶_U/L', '(ALP)碱性磷酸酶_U/L', '(TBA)血清总胆汁酸_μmol/L', '(TP)总蛋白_g/L',
+#                     '(ALB)白蛋白_g/L', '(GA)糖化血清白蛋白_%', '(DDIMER)D-二聚体定量_μg/l', '(GLU)葡萄糖_mmol/L',
+#                     '(PCO2)二氧化碳分压_mmHg', '(SO2)氧饱和度_%', '(BASBFB)嗜碱细胞百分比_%', '(FBG)纤维蛋白原定量_g/l',
+#                     '(HCY)同型半胱氨酸_umol/l', '(NEBFB)中性粒细胞百分比_%', 'GB/T-codename']
 
 
 class DiagnoseData(object):
@@ -169,11 +169,13 @@ def eval_input_fn(features, labels, batch_size):
 traindf = pd.read_csv('../data/trainingset.txt', sep='\t')
 testdf = pd.read_csv('../data/testset.txt', sep='\t')
 
-train = get_onehot_trainset(traindf)
-test = get_onehot_trainset(testdf)
+#train = get_onehot_trainset(traindf)
+#test = get_onehot_trainset(testdf)
 
-train_x, train_y = train, traindf['GB/T-codename']
-test_x, test_y = test, testdf['GB/T-codename']
+train_x, train_y = traindf, traindf.pop('GB/T-codename')
+test_x, test_y = testdf, testdf.pop('GB/T-codename')
+train_x.pop('现病史')
+test_x.pop('现病史')
 
 labels = ['不稳定型心绞痛', '冠状动脉粥样硬化', '非ST段抬高型心肌梗死', '阵发性房颤', '急性前壁心肌梗死', '急性下壁心肌梗死',
           '持续性房颤', '阵发性室上性心动过速', '冠状动脉粥样硬化性心脏病', '稳定型心绞痛']
@@ -184,13 +186,13 @@ for key in train_x.keys():
 
 classifier = tf.estimator.DNNClassifier(
     feature_columns=feature_columns,
-    hidden_units=[35, 35, 35],
+    hidden_units=[40, 40, 40],
     n_classes=10,
     model_dir='models/dnn',
     label_vocabulary = labels
 )
 
-classifier.train(input_fn=lambda : train_input_fn(train_x, train_y, len(train_y)), steps=200)  # full batch learning
+classifier.train(input_fn=lambda : train_input_fn(train_x, train_y, len(train_y)), steps=180)  # full batch learning
 
 eval_result = classifier.evaluate(input_fn=lambda : eval_input_fn(test_x, test_y, len(test_y)))
 

@@ -1,19 +1,19 @@
 import pandas as pd
+import pinyin
 
 
 class DiagnoseData(object):
     log = open('logs.txt', 'w')
+    print('日志文件打开: ./logx.txt')
     instancenum = 0
 
     def __init__(self, columnname, datalist):
         self.columnname = columnname
         self.datalist = datalist
         DiagnoseData.instancenum += 1
-        print(self.columnname + '  创建, instance num = ' + str(DiagnoseData.instancenum))
 
     def __del__(self):
         DiagnoseData.instancenum -= 1
-        print(self.columnname + '  析构, instance num = ' + str(DiagnoseData.instancenum))
         if DiagnoseData.instancenum == 0:
             DiagnoseData.log.close()
             print('日志文件关闭')
@@ -26,15 +26,16 @@ class EnumData(DiagnoseData):
 
     def encoding2onehot(self):
         m = {}
+        py = pinyin.get(self.columnname, format='strip').strip('()').replace(')', '-').replace('(', '')
         for i in range(len(self.enums)):
-            m[self.columnname + '_' + self.enums[i]] = [0] * len(self.datalist)
+            m[py + '_' + str(i)] = [0] * len(self.datalist)
         res = pd.DataFrame(m)
         for idx, val in enumerate(self.datalist):
             flag = True
-            for enm in self.enums:
+            for enmidx, enm in enumerate(self.enums):
                 if val == enm:
                     flag = False
-                    res.loc[idx, self.columnname + '_' + enm] = 1
+                    res.loc[idx, py + '_' + str(enmidx)] = 1
                     break
             if flag and pd.notna(val):
                 DiagnoseData.log.write(self.columnname + ': line ' + str(idx) + ' : ' + str(val) + '\n')
@@ -48,15 +49,16 @@ class BlockData(DiagnoseData):
 
     def encoding2onehot(self):
         m = {}
+        py = pinyin.get(self.columnname, format='strip').strip('()').replace(')', '-').replace('(', '')
         for i in range(len(self.blocks)):
-            m[self.columnname + '_' + str(i)] = [0] * len(self.datalist)
+            m[py + '_' + str(i)] = [0] * len(self.datalist)
         res = pd.DataFrame(m)
         for idx, val in enumerate(self.datalist):
             flag = True
             for blcidx, blc in enumerate(self.blocks):
                 if blc[0] <= val < blc[1]:
                     flag = False
-                    res.loc[idx, self.columnname + '_' + str(blcidx)] = 1
+                    res.loc[idx, py + '_' + str(blcidx)] = 1
                     break
             if flag and pd.notna(val):
                 DiagnoseData.log.write(self.columnname + ': line ' + str(idx) + ' : ' + str(val) + '\n')
@@ -130,7 +132,7 @@ pendingjobs = [
     # BlockData('(PALB)前白蛋白_g/L', df['(PALB)前白蛋白_g/L']),
     # BlockData('(PT)凝血酶原时间_S'),
     # BlockData('(APTT)活化部分凝血活酶时间_S'),
-    BlockData('(DDIMER)D-二聚体定量', df['(DDIMER)D-二聚体定量_μg/l'], [(0, 201), (201, 240), (240, 401), (401, 801)]), # 0--200
+    BlockData('(DDIMER)D-二聚体定量', df['(DDIMER)D-二聚体定量_μg/l'], [(0, 201), (201, 240), (240, 401), (401, 801)]), # 0--l
     BlockData('(GLU)葡萄糖', df['(GLU)葡萄糖_mmol/L'], [(0, 3.12), (3.12, 3.9), (3.9, 6.11), (6.11, 7.32), (7.32, 12.2), (12.2, 24.4), (24.4, 36.6)]),  # 3.9--6.1
     # BlockData('(BNP)B型钠脲肽_fmol/ml', df['(BNP)B型钠脲肽_fmol/ml'], [()]) # 因地区而异
     BlockData('(PCO2)二氧化碳分压', df['(PCO2)二氧化碳分压_mmHg'], [(0, 28), (28, 35), (35, 45), (45, 54), (54, 110)]),  # 35-45
@@ -167,6 +169,6 @@ for col in resdf:
         f.write(col + ': sum = ' + str(resdf[col].sum()) + '\n')
 f.close()
 
-resdf = pd.concat([df['GB/T-codename'], resdf], axis=1)
+resdf = pd.concat([df['GB/T-codename'], df['现病史'], resdf], axis=1)
 resdf.to_csv('../data/encodingdata.txt', sep='\t', index=False)
 
