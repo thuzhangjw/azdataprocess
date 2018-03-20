@@ -1,5 +1,6 @@
 import pandas as pd
 import random
+import sys
 
 def count(df):
     groups = df.groupby('GB/T-codename').groups
@@ -8,7 +9,7 @@ def count(df):
         print(res[0], len(res[1]))
 
 
-df = pd.read_csv('../data/undersampled.txt', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
 
 groups = df.groupby('GB/T-codename').groups
 target = groups['不稳定型心绞痛']
@@ -17,7 +18,7 @@ criterion = [True] * len(df)
 
 l = len(target)
 num = 0
-while num < 0.9 * l:
+while num < 0.85 * l:
     i = random.randint(0, l-1)
     if criterion[target[i]]:
         criterion[target[i]] = False

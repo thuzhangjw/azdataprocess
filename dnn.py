@@ -180,6 +180,8 @@ test_x.pop('现病史')
 labels = ['不稳定型心绞痛', '冠状动脉粥样硬化', '非ST段抬高型心肌梗死', '阵发性房颤', '急性前壁心肌梗死', '急性下壁心肌梗死',
           '持续性房颤', '阵发性室上性心动过速', '冠状动脉粥样硬化性心脏病', '稳定型心绞痛']
 
+merged_labels = ['不稳定型心绞痛', '冠状动脉粥样硬化', '非ST段抬高型心肌梗死', '房颤', '急性心肌梗死']
+
 feature_columns = []
 for key in train_x.keys():
     feature_columns.append(tf.feature_column.numeric_column(key=key))
@@ -187,9 +189,9 @@ for key in train_x.keys():
 classifier = tf.estimator.DNNClassifier(
     feature_columns=feature_columns,
     hidden_units=[40, 40, 40],
-    n_classes=10,
+    n_classes=5,
     model_dir='models/dnn',
-    label_vocabulary = labels
+    label_vocabulary = merged_labels
 )
 
 classifier.train(input_fn=lambda : train_input_fn(train_x, train_y, len(train_y)), steps=180)  # full batch learning

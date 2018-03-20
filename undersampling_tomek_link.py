@@ -1,5 +1,6 @@
 import pandas as pd
 from imblearn.under_sampling import TomekLinks
+import sys
 
 def count(df):
     groups = df.groupby('GB/T-codename').groups
@@ -18,7 +19,7 @@ def add2list(df, X, y):
     
 
 def undersampling(df):
-    tl = TomekLinks(n_jobs=16, return_indices=True)
+    tl = TomekLinks(ratio='all', n_jobs=16, return_indices=True)
     X = []
     y = []
     add2list(df, X, y)
@@ -32,7 +33,7 @@ def undersampling(df):
     newdf = df[criterion].reset_index(drop=True)
     return newdf
 
-df = pd.read_csv('../data/encodingdata.txt', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
 statis = count(df)
 
 i = 1
@@ -54,37 +55,45 @@ while True:
 ## test
 
 def undersampling_pair(df1, df2):
-    tl = TomekLinks(n_jobs=16, return_indices=True)
+    tl = TomekLinks(ratio='all', n_jobs=16, return_indices=True)
     X = []
     y = []
     add2list(df1, X, y)
     add2list(df2, X, y)
     X, y, idx = tl.fit_sample(X, y)
-    l = len(df1)
-    criterion = [False] * l
+    l1 = len(df1)
+    l2 = len(df2)
+    criterion1 = [False] * l1
+    criterion2 = [False] * l2
     for i in idx:
-        if i < l:
-            criterion[i] = True
-    newdf1 = df1[criterion].reset_index(drop=True)
-    return newdf1 
+        if i < l1:
+            criterion1[i] = True
+        else:
+            criterion2[i-l1] = True
+    newdf1 = df1[criterion1].reset_index(drop=True)
+    newdf2 = df2[criterion2].reset_index(drop=True)
+    return newdf1, newdf2 
 
 
 GB_codenames = ['冠状动脉粥样硬化', '非ST段抬高型心肌梗死', '阵发性房颤', '急性前壁心肌梗死', '急性下壁心肌梗死', 
         '持续性房颤', '阵发性室上性心动过速', '冠状动脉粥样硬化性心脏病', '稳定型心绞痛']
 
+merged_codenames = ['冠状动脉粥样硬化', '非ST段抬高型心肌梗死', '房颤', '急性心肌梗死']
+
 dflist = []
-for codename in GB_codenames:
+for codename in merged_codenames:
     dflist.append(df.loc[lambda d: d['GB/T-codename'] == codename, :].reset_index(drop=True))
 
 majoritydf = df.loc[lambda d: d['GB/T-codename'] == '不稳定型心绞痛', :].reset_index(drop=True)
 
 statis = len(majoritydf)
 while True:
-    for df2 in dflist:
-        majoritydf = undersampling_pair(majoritydf, df2)
+    for idx, df2 in enumerate(dflist):
+        majoritydf, newdf2 = undersampling_pair(majoritydf, df2)
         print(majoritydf.iloc[0, 0], len(majoritydf))
-        print(df2.iloc[0, 0], len(df2))
+        print(newdf2.iloc[0, 0], len(newdf2))
         print('\n')
+        dflist[idx] = newdf2 
     newstatis = len(majoritydf)
     if newstatis == statis:
         break
@@ -95,5 +104,5 @@ for df2 in dflist:
     resdf = pd.concat([resdf, df2], axis=0).reset_index(drop=True)
 
 print('toal lines: ', len(resdf))
-resdf.to_csv('../data/undersampled.txt', sep='\t', index=False)
+resdf.to_csv(sys.argv[2], sep='\t', index=False)
 
