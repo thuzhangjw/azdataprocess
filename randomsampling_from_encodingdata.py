@@ -39,7 +39,7 @@ criterion = [True] * len(df)
 for res in reslist:
     num = 0
     l = len(res[1])
-    while num < 0.2 * l:
+    while num < 0.1 * l:
         i = random.randint(0, l-1)
         if criterion[res[1][i]]:
             num += 1
@@ -54,5 +54,4 @@ count(test)
 
 train.to_csv('../data/trainingset.txt', sep='\t', index=False)
 test.to_csv('../data/testset.txt', sep='\t', index=False)
-
 

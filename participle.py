@@ -61,8 +61,8 @@ for text in df['现病史']:
         processd_list = add_negtive_word(seg_list)
 #        processd_list = seg_list 
         for word in processd_list:
-            if word not in stopwords:
-                news += word + ' '
+            if word.strip() not in stopwords:
+                news += word.strip() + ' '
         news += '。 '
         word_list_list.append(news.strip('。 '))
         newdoc += news 
