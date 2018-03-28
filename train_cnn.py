@@ -26,9 +26,10 @@ with tf.Graph().as_default():
         cnn = CNNLayer(
                 sequence_length = max_sentence_length, 
                 filter_sizes = [2, 3, 4, 5],
-                num_filters = 64, 
+                num_filters = 128, 
                 init_words_embedded_model = init_words_embedded_model,
-                num_classes = len(y_train[0])
+                num_classes = len(y_train[0]),
+                l2_reg_lambda = 0.01
                 )
 
         # Define Training procedure
@@ -99,7 +100,7 @@ with tf.Graph().as_default():
             
         
         # Generate batches
-        batches =  data_helpers.batch_iter(x_train_text, y_train, 64, 100, max_sentence_length)
+        batches =  data_helpers.batch_iter(x_train_text, y_train, 64, 150, max_sentence_length)
         for batch in batches:
             x_batch, y_batch = zip(*batch)
             x_batch, y_batch = list(x_batch), list(y_batch)

@@ -3,7 +3,7 @@ import data_helpers
 import numpy as np 
 
 
-checkpoint_dir = '/home/zhangjw/anzhentmp/runs/1522247512/checkpoints'
+checkpoint_dir = '/home/zhangjw/anzhentmp/runs/1522249376/checkpoints'
 checkpoint_file = tf.train.latest_checkpoint(checkpoint_dir)
 
 x_test_text, y_test = data_helpers.load_text_and_labels('../data/testset.txt')
