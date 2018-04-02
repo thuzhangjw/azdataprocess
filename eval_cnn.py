@@ -2,8 +2,9 @@ import tensorflow as tf
 import data_helpers 
 import numpy as np 
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
-checkpoint_dir = '/home/zhangjw/anzhentmp/runs/1522249376/checkpoints'
+checkpoint_dir = '/home/zhangjw/anzhentmp/runs/1522306692/checkpoints'
 checkpoint_file = tf.train.latest_checkpoint(checkpoint_dir)
 
 x_test_text, y_test = data_helpers.load_text_and_labels('../data/testset.txt')

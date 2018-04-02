@@ -29,7 +29,7 @@ with tf.Graph().as_default():
                 num_filters = 128, 
                 init_words_embedded_model = init_words_embedded_model,
                 num_classes = len(y_train[0]),
-                l2_reg_lambda = 0.01
+                l2_reg_lambda = 0.1
                 )
 
         # Define Training procedure
@@ -100,7 +100,7 @@ with tf.Graph().as_default():
             
         
         # Generate batches
-        batches =  data_helpers.batch_iter(x_train_text, y_train, 64, 150, max_sentence_length)
+        batches =  data_helpers.batch_iter_text(x_train_text, y_train, 64, 150, max_sentence_length)
         for batch in batches:
             x_batch, y_batch = zip(*batch)
             x_batch, y_batch = list(x_batch), list(y_batch)

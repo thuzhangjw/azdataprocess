@@ -50,7 +50,7 @@ class CNNLayer(object):
         with tf.name_scope('dropout'):
             self.h_drop = tf.nn.dropout(self.h_pool_flat, self.dropout_keep_prob)
 
-        # Final (unnormalized) scores and predictions
+        # Final scores and predictions
         with tf.name_scope('output'):
             W = tf.get_variable(
                     'W', 
@@ -63,7 +63,7 @@ class CNNLayer(object):
             self.predictions = tf.argmax(self.scores, 1, name='predictions')
 
         # Calculate mean cross-entropy loss
-        with tf.name_scope('loos'):
+        with tf.name_scope('loss'):
             losses = tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.scores, labels=self.input_y)
             self.loss = tf.reduce_mean(losses) + l2_reg_lambda * l2_loss 
 
