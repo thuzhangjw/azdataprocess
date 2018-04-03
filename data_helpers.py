@@ -69,3 +69,21 @@ def batch_iter_numeric(x_data, y_data, batch_size, epochs, shuffle=True):
     data = zip(x_data, y_data)
     return shuffle_and_batch(data, batch_size, epochs, shuffle)
 
+
+def load_all_data(path):
+    df = pd.read_csv(path, sep='\t')
+    texts = df['disease_his']
+    texts_feature = [re.sub(r'。', '', text) for text in texts]
+
+    numeric_features = df.iloc[:, 3:].astype('float32').values.tolist()
+
+    word_labels = df['GB/T-codename']
+    labels = convert_word2_onehot(word_labels)
+    return texts_feature, numeric_features, labels 
+
+# need unzip two times
+def batch_iter(text_features, numeric_features, labels, batch_size, epochs, max_length, shuffle=True):
+    x_data = text_features
+    y_data = zip(numeric_features, labels)
+    return batch_iter_text(x_data, y_data, batch_size, epochs, max_length, shuffle) 
+

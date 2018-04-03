@@ -63,9 +63,9 @@ class StackedAutoencoderClassifier():
 
         # Fine tune
         with tf.variable_scope('fine_tune'):
-            final_features = self.input_x
+            self.final_features = self.input_x
             for encoder in self.autoencoders:
-                final_features = encoder.comput_hidden(final_features, encoder.hidden_weight, encoder.hidden_bias, False)
+                self.final_features = encoder.comput_hidden(self.final_features, encoder.hidden_weight, encoder.hidden_bias, False)
             W = tf.get_variable(
                     'W',
                     shape=[n_hidden_list[num_hidden-1], num_classes],
@@ -74,7 +74,7 @@ class StackedAutoencoderClassifier():
             b = tf.Variable(tf.constant(0.1, shape=[num_classes]), name='b')
             l2_loss = tf.nn.l2_loss(W)
             l2_loss += tf.nn.l2_loss(b)
-            self.scores = tf.nn.xw_plus_b(final_features, W, b, name='scores')
+            self.scores = tf.nn.xw_plus_b(self.final_features, W, b, name='scores')
             self.predictions = tf.argmax(self.scores, 1, name='predictions')
 
         # Calculate mean cross-entropy loss

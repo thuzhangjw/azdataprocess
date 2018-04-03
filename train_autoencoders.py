@@ -39,7 +39,7 @@ with tf.Graph().as_default():
         sess.run(tf.global_variables_initializer())
 
         # pre training
-        batches = data_helpers.batch_iter_numeric(x_train_numeric, y_train, 128, 20)
+        batches = data_helpers.batch_iter_numeric(x_train_numeric, y_train, 128, 40)
         for i in range(len(sa.autoencoders)):
             for batch in batches:
                 x_batch, _ = zip(*batch)
@@ -56,12 +56,12 @@ with tf.Graph().as_default():
         for encoder in sa.autoencoders:
             print(sess.run(encoder.hidden_weight), sess.run(encoder.hidden_bias), file=f)
 
-
+        f.close()
         # fine tune
         # global_step = tf.Variable(0, name='global_step', trainable=False)
-        sess.run(global_step.initializer)
+        # sess.run(global_step.initializer)
         print('\nfine tune')
-        batches = data_helpers.batch_iter_numeric(x_train_numeric, y_train, 128, 40)
+        batches = data_helpers.batch_iter_numeric(x_train_numeric, y_train, 128, 80)
         for batch in batches:
             x_batch, y_batch = zip(*batch)
             x_batch, y_batch = list(x_batch), list(y_batch)
@@ -70,7 +70,7 @@ with tf.Graph().as_default():
                     sa.input_y: y_batch 
                     }
             _, loss, accuracy = sess.run([sa.train_op, sa.loss, sa.accuracy], feed_dict)
-            
+                        
             time_str = datetime.datetime.now().isoformat()
             print("{}: loss {:g}, acc {:g}".format(time_str, loss, accuracy))
             # current_step = tf.train.global_step(sess, global_step)
@@ -78,6 +78,7 @@ with tf.Graph().as_default():
         path = saver.save(sess, checkpoint_prefix)
         print("Saved model checkpoint to {}\n".format(path))
         
+        f = open('out2.txt', 'w')
         print('after fine tune value of W, b')
         for encoder in sa.autoencoders:
             print(sess.run(encoder.hidden_weight), sess.run(encoder.hidden_bias), file=f)
