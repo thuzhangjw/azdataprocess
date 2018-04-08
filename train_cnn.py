@@ -21,6 +21,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(allow_soft_placement=True, log_device_placement=False)
+    session_conf.gpu_options.allow_growth = True
     sess = tf.Session(config=session_conf)
     with sess.as_default():
         cnn = CNNLayer(
@@ -29,7 +30,8 @@ with tf.Graph().as_default():
                 num_filters = 128, 
                 init_words_embedded_model = init_words_embedded_model,
                 num_classes = len(y_train[0]),
-                l2_reg_lambda = 0.1
+                l2_reg_lambda = 0.1,
+                use_static=False
                 )
 
         # Define Training procedure
@@ -40,7 +42,7 @@ with tf.Graph().as_default():
         
         # Output directory for models and summaries
         timestamp = str(int(time.time()))
-        out_dir = '../runs/' + timestamp 
+        out_dir = '../runs/cnn-' + timestamp 
         print("Writing to {}\n".format(out_dir))
 
         # Summaries for loss and accuracy
@@ -106,7 +108,7 @@ with tf.Graph().as_default():
             x_batch, y_batch = list(x_batch), list(y_batch)
             train_step(x_batch, y_batch)
             current_step = tf.train.global_step(sess, global_step)
-            if current_step % 100 == 0:
+            if current_step % 500 == 0:
                 path = saver.save(sess, checkpoint_prefix, global_step=current_step)
                 print("Saved model checkpoint to {}\n".format(path))
                 
@@ -114,13 +116,19 @@ with tf.Graph().as_default():
         # write fine tuned word embedding to file
         new_wordvec_path = '../data/new_wordvec.txt'
         print('Write fine tuned word vector to file {}'.format(new_wordvec_path))
-        with open(new_wordvec_path, 'w') as f:
-            f.write(str(cnn.embedded_vocabulary.shape[0]) + ' ' + str(cnn.embedded_vocabulary.shape[1]))
-            idx = 0
-            for val in sess.run(cnn.embedded_vocabulary):
-                if idx == 0:
-                    f.write('\n' + data_helpers.wordvec2str('unknown', val))
-                else:
-                    f.write('\n' + data_helpers.wordvec2str(cnn.keys[idx-1], val))
-                idx += 1
+        #with open(new_wordvec_path, 'w') as f:
+        #    f.write(str(cnn.embedded_vocabulary.shape[0]) + ' ' + str(cnn.embedded_vocabulary.shape[1]))
+        #    idx = 0
+        #    for val in sess.run(cnn.embedded_vocabulary):
+        #        if idx == 0:
+        #            f.write('\n' + data_helpers.wordvec2str('unknown', val))
+        #        else:
+        #            f.write('\n' + data_helpers.wordvec2str(cnn.keys[idx-1], val))
+        #        idx += 1
+        data_helpers.write_word2vec_text(new_wordvec_path, sess.run(cnn.embedded_vocabulary), cnn.keys)
+        
+        if cnn.use_static:
+            old_wordvec_path = '../data/old_wordvec.txt'
+            data_helpers.write_word2vec_text(old_wordvec_path, sess.run(cnn.static_embedded_vocabulary), cnn.keys)
 
+                

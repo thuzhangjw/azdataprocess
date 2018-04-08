@@ -1,10 +1,11 @@
 import tensorflow as tf
 import data_helpers 
 import numpy as np 
+import os
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
-checkpoint_dir = '/home/zhangjw/anzhentmp/runs/1522306692/checkpoints'
+checkpoint_dir = '/home/zhangjw/anzhentmp/runs/cnn-1523119646/checkpoints'
 checkpoint_file = tf.train.latest_checkpoint(checkpoint_dir)
 
 x_test_text, y_test = data_helpers.load_text_and_labels('../data/testset.txt')
@@ -27,7 +28,7 @@ with graph.as_default():
         predictions = graph.get_operation_by_name('output/predictions').outputs[0]
         
         max_sentence_length = input_x.shape[1]
-        batches = data_helpers.batch_iter(x_test_text, y_test, 64, 1, max_sentence_length, shuffle=False)
+        batches = data_helpers.batch_iter_text(x_test_text, y_test, 64, 1, max_sentence_length, shuffle=False)
 
         all_predictions = []
         for batch in batches:

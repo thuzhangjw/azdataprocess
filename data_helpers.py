@@ -87,3 +87,15 @@ def batch_iter(text_features, numeric_features, labels, batch_size, epochs, max_
     y_data = zip(numeric_features, labels)
     return batch_iter_text(x_data, y_data, batch_size, epochs, max_length, shuffle) 
 
+
+def write_word2vec_text(path, vocab, keys):
+    with open(path, 'w') as f:
+        f.write(str(len(vocab)) + ' ' + str(len(vocab[0])))
+        idx = 0
+        for val in vocab:
+            if idx == 0:
+                f.write('\n' + wordvec2str('unknown', val))
+            else:
+                f.write('\n' + wordvec2str(keys[idx-1], val))
+            idx += 1
+

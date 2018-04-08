@@ -18,7 +18,7 @@ numeric_feature_num = len(numeric_features_train[0])
 
 init_words_embedded_model = Word2Vec.load('../data/word2vec.model')
 num_classes = len(labels_train[0])
-l2_reg_lambda = 0
+l2_reg_lambda = 0.6
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
@@ -59,20 +59,20 @@ with tf.Graph().as_default():
 
             l2_loss = tf.nn.l2_loss(W)
             l2_loss += tf.nn.l2_loss(b)
-            scores = tf.nn.xw_plus_b(merged_feature, W, b, name='scores')
-            predictions = tf.argmax(scores, 1, name='predictions')
+            train_scores = tf.nn.xw_plus_b(merged_feature, W, b, name='scores')
+            train_predictions = tf.argmax(train_scores, 1, name='predictions')
 
         with tf.variable_scope('final_loss'):
-            losses = tf.nn.softmax_cross_entropy_with_logits_v2(logits=scores, labels=input_y)
-            loss = tf.reduce_mean(losses) + l2_reg_lambda * l2_loss
+            entropy_losses = tf.nn.softmax_cross_entropy_with_logits_v2(logits=train_scores, labels=input_y)
+            train_loss = tf.reduce_mean(entropy_losses) + l2_reg_lambda * l2_loss
 
         with tf.variable_scope('final_accuracy'):
-            correct_predictions = tf.equal(predictions, tf.argmax(input_y, 1))
-            accuracy = tf.reduce_mean(tf.cast(correct_predictions, 'float'), name='accuracy')
+            correct_predictions = tf.equal(train_predictions, tf.argmax(input_y, 1))
+            train_accuracy = tf.reduce_mean(tf.cast(correct_predictions, 'float'), name='accuracy')
 
         global_step = tf.Variable(0, name='global_step', trainable=False)
         optimizer = tf.train.AdamOptimizer()
-        train_op = optimizer.minimize(loss, global_step=global_step)
+        train_op = optimizer.minimize(train_loss, global_step=global_step)
 
         timestamp = str(int(time.time()))
         out_dir = '../run/final_model-' + timestamp
@@ -102,7 +102,7 @@ with tf.Graph().as_default():
 
 
         # train the whole model
-        batches = data_helpers.batch_iter(text_features_train, numeric_features_train, labels_train, 100, max_sentence_length)
+        batches = data_helpers.batch_iter(text_features_train, numeric_features_train, labels_train, 128, 100, max_sentence_length)
         for batch in batches:
             text_batch, numeric_and_label_batch = zip(*batch)
             numeric_batch, label_batch = zip(*numeric_and_label_batch)
@@ -114,11 +114,11 @@ with tf.Graph().as_default():
                 input_y: label_batch 
                     }
 
-            _, t_step, t_loss, t_accuracy = sess.run([train_op, global_step, loss, accuracy], feed_dict)
+            _, t_step, t_loss, t_accuracy = sess.run([train_op, global_step, train_loss, train_accuracy], feed_dict)
             time_str = datetime.datetime.now().isoformat()
             print("{}: step {}, loss {:g}, acc {:g}".format(time_str, t_step, t_loss, t_accuracy))
             current_step = tf.train.global_step(sess, global_step)
-            if current_step % 100 == 0:
+            if current_step % 500 == 0:
                 path = saver.save(sess, checkpoint_prefix, global_step=current_step)
                 print("Saved model checkpoint to {}\n".format(path))
 
