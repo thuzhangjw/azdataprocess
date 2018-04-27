@@ -13,6 +13,7 @@ x_train_text, y_train = data_helpers.load_text_and_labels('../data/trainingset.t
 x_test_text, y_test = data_helpers.load_text_and_labels('../data/testset.txt')
 
 max_sentence_length = max([len(x.split(" ")) for x in (x_train_text + x_test_text)])
+print(max_sentence_length)
 
 init_words_embedded_model = Word2Vec.load('../data/word2vec.model')
 

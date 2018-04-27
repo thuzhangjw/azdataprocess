@@ -1,4 +1,5 @@
 import pandas as pd
+import sys
 
 table = {
         '稳定性心绞痛': '稳定型心绞痛',
@@ -16,7 +17,7 @@ def repl(s):
     return res 
 
 log = open('../log/doc_preprocess.log', 'w')
-df = pd.read_csv('../data/undersampled_tomek_link.txt', sep='\t')
+df = pd.read_csv(sys.argv[1], sep='\t')
 criterion = [True] * len(df)
 num = 0
 for i in range(len(df)):
@@ -29,5 +30,5 @@ for i in range(len(df)):
 log.close()
 print(num)
 
-df[criterion].to_csv('../data/undersampled.txt', sep='\t', index=False)
+df[criterion].to_csv(sys.argv[2], sep='\t', index=False)
 

@@ -7,6 +7,9 @@ import os
 import data_helpers
 import datetime
 import time
+from numeric_cnn import NumericCNN
+from cnn_rnn import CNN_RNN
+import sys
 
 
 text_features_train, numeric_features_train, labels_train = data_helpers.load_all_data('../data/trainingset.txt')
@@ -22,6 +25,17 @@ l2_reg_lambda = 0.6
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
+def train(x_train_cnn, x_train_cnn_rnn, x_train_ncnn, y_train, x_test_cnn, x_test_cnn_rnn, x_test_ncnn, y_test):
+
+    cnn_max_sentence_length = max([len(x.split(' ')) for x in (x_train_cnn + x_test_cnn)])
+    ncnn_feature_num = len(x_train_ncnn[0])
+    ncnn_feature_dim = len(x_train_ncnn[0][0])
+    
+    cnn_rnn_max_sentence_num = max([len(a) for a in (x_train_cnn_rnn + x_test_cnn_rnn)])
+    cnn_rnn_max_sentence_length = data_helpers.get_cnn_rnn_max_sentence_length(x_train_cnn_rnn, x_test_cnn_rnn)
+    init_words_embedded_model = Word2Vec.load('../data/word2vec.model')
+    num_classes = len(y_train[0])
+    
 with tf.Graph().as_default():
     session_conf = tf.ConfigProto(allow_soft_placement=True, log_device_placement=False)
     session_conf.gpu_options.allow_growth = True 

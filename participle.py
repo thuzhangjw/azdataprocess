@@ -83,7 +83,7 @@ for text in df['现病史']:
 newdf = pd.DataFrame({'disease_his' : sentence_list})
 newdf = pd.concat([newdf, df], axis=1)
 
-newdf.to_csv('../data/participled.txt', sep='\t', index=False)
+newdf.to_csv('../data2/finalwholeset.txt', sep='\t', index=False)
 
 with open(sys.argv[2], 'w') as f:
     for s in word_list_list:

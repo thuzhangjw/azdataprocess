@@ -2,7 +2,7 @@ import gensim
 import sys
 import copy
 
-sentences = gensim.models.word2vec.LineSentence('../data/corups.txt')
+sentences = gensim.models.word2vec.LineSentence('../data2/corups.txt')
 #model = gensim.models.word2vec.Word2Vec(min_count=1, window=5, size=100, workers=16)
 #model.build_vocab(sentences)
 #
@@ -23,13 +23,14 @@ sentences = gensim.models.word2vec.LineSentence('../data/corups.txt')
 #final_model.save('../data/word2vec.model')
 #
 
-model = gensim.models.word2vec.Word2Vec(sentences, min_count=0, workers=16, iter=3, compute_loss=True, size=80)
+model = gensim.models.word2vec.Word2Vec(sentences, min_count=0, workers=16, iter=3, compute_loss=True, size=100)
 print('loss:', model.get_latest_training_loss())
 
 #model.save('../data/word2vec.model')
 
 
 loss = model.get_latest_training_loss()
+final_model = model
 for i in range(7):
     model.train(sentences, total_examples=model.corpus_count, compute_loss=True, epochs=model.epochs)
     nloss = model.get_latest_training_loss()
@@ -39,5 +40,5 @@ for i in range(7):
         print('nloss:', nloss)
 
 print('final loss:', loss)
-final_model.save('../data/word2vec.model')
+final_model.save('../data2/word2vec.model')
 

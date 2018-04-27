@@ -52,6 +52,6 @@ count(train)
 print('\n')
 count(test)
 
-train.to_csv('../data/trainingset.txt', sep='\t', index=False)
-test.to_csv('../data/testset.txt', sep='\t', index=False)
+train.to_csv('../data2/trainingset' + sys.argv[2] + '.txt', sep='\t', index=False)
+test.to_csv('../data2/testset' + sys.argv[2] + '.txt', sep='\t', index=False)
 

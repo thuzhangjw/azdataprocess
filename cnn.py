@@ -3,7 +3,7 @@ import pandas as pd
 from gensim.models import Word2Vec 
 
 class CNNLayer(object):
-    def __init__(self, sequence_length, filter_sizes, num_filters, init_words_embedded_model, num_classes, l2_reg_lambda=0.0, use_static=False):
+    def __init__(self, sequence_length, filter_sizes, num_filters, init_words_embedded_model, num_classes, l2_reg_lambda=0.1, use_static=False):
         
         self.use_static = use_static 
         self.vocabulary_index_map, self.embedded_vocabulary = self.load_init_embedded_vocabulary(init_words_embedded_model)
@@ -36,6 +36,9 @@ class CNNLayer(object):
                 W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name='W')
                 b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name='b')
                 conv= tf.nn.conv2d(self.embedded_chars_expanded, W, strides=[1, 1, 1, 1], padding='VALID', name='conv')
+                
+                l2_loss += tf.nn.l2_loss(W)
+                l2_loss += tf.nn.l2_loss(b)
 
                 # Apply nonlinearity
                 h = tf.nn.relu(tf.nn.bias_add(conv, b), name='relu')
@@ -54,12 +57,21 @@ class CNNLayer(object):
         self.h_pool = tf.concat(pooled_outputs, axis=3)
         self.h_pool_flat = tf.reshape(self.h_pool, [-1, num_filters_total])
 
-        # Add dropout
-        with tf.name_scope('dropout'):
-            self.h_drop = tf.nn.dropout(self.h_pool_flat, self.dropout_keep_prob)
+        with tf.variable_scope('final_feature'):
+            W = tf.get_variable(
+                    'W',
+                    shape=[num_filters_total, num_filters_total],
+                    initializer=tf.contrib.layers.xavier_initializer()
+                    )
+            b = tf.Variable(tf.constant(0.1, shape=[num_filters_total]), name='b')
+            l2_loss += tf.nn.l2_loss(W)
+            l2_loss += tf.nn.l2_loss(b)
+            self.l2_loss = l2_reg_lambda * l2_loss 
+            self.final_feature = tf.nn.xw_plus_b(self.h_pool_flat, W, b, name='final_feature')
 
         # Final scores and predictions
         with tf.name_scope('output'):
+            self.h_drop = tf.nn.dropout(self.final_feature, self.dropout_keep_prob)
             W = tf.get_variable(
                     'W', 
                     shape=[num_filters_total, num_classes],

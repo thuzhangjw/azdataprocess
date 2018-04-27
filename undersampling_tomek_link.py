@@ -55,7 +55,7 @@ while True:
 ## test
 
 def undersampling_pair(df1, df2):
-    tl = TomekLinks(ratio='all', n_jobs=16, return_indices=True)
+    tl = TomekLinks(ratio='auto', n_jobs=16, return_indices=True)
     X = []
     y = []
     add2list(df1, X, y)
